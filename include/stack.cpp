@@ -90,9 +90,9 @@ bool Stack<T>::is_empty() const {
 }
 
 template <typename T>
-T* new_with_copy(const T *tmp, count, array_size) {
-    array_ = new T[array_size];
-    copy(tmp, tmp + count, array_);\
+T* new_with_copy(const T *tmp, size_t count, size_t array_size) {
+    T *array_ = new T[array_size];
+    copy(tmp, tmp + count, array_);
     return array_;
 }
 
@@ -101,15 +101,17 @@ Stack<T>::Stack(const Stack &tmp)
         :   count_(tmp.count_),
             array_size_(tmp.array_size_)
 {
-    new_with_copy(tmp.array_);
+    array_ = new_with_copy(tmp.array_, count_, array_size_);
 }
 
 template <typename T>
 Stack<T>& Stack<T>::operator=(const Stack<T> &tmp) {
+    if (this == &tmp) {}
     count_ = tmp.count_;
     array_size_ = tmp.array_size_;
-    new_with_copy(tmp.array_);
+    array_ = new_with_copy(tmp.array_, count_, array_size_);
     return *this;
 }
+
 
 #endif
