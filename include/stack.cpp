@@ -31,7 +31,6 @@ public:
     bool is_empty() const;
 
 private:
-    void new_with_empty(const T*);
     void grow();
 
     T *array_;
@@ -91,9 +90,10 @@ bool Stack<T>::is_empty() const {
 }
 
 template <typename T>
-void Stack<T>::new_with_empty(const T *tmp) {
-    array_ = new T[array_size_];
-    copy(tmp, tmp + count_, array_);
+T* new_with_copy(const T *tmp, count, array_size) {
+    array_ = new T[array_size];
+    copy(tmp, tmp + count, array_);\
+    return array_;
 }
 
 template <typename T>
@@ -101,14 +101,14 @@ Stack<T>::Stack(const Stack &tmp)
         :   count_(tmp.count_),
             array_size_(tmp.array_size_)
 {
-    new_with_empty(tmp.array_);
+    new_with_copy(tmp.array_);
 }
 
 template <typename T>
 Stack<T>& Stack<T>::operator=(const Stack<T> &tmp) {
     count_ = tmp.count_;
     array_size_ = tmp.array_size_;
-    new_with_empty(tmp.array_);
+    new_with_copy(tmp.array_);
     return *this;
 }
 
