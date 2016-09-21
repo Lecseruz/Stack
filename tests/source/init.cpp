@@ -12,15 +12,15 @@ SCENARIO("count", "[count]"){
 SCENARIO("push", "[push]"){
   Stack<int> s;
   s.push(1);
-  REQUIRE(s.count()==1);
-  REQUIRE(s.pop()==1);
+  REQUIRE(s.count() == 1);
+  REQUIRE(s.pop() == 1);
 }
 
 SCENARIO("pop", "[pop]"){
   Stack<int> s;
   s.push(1);
-  REQUIRE(s.count()==1);
-  REQUIRE(s.pop()==1);
+  REQUIRE(s.count() == 1);
+  REQUIRE(s.pop() == 1);
 }
 
 SCENARIO("prisv", "[prisv]"){
@@ -28,15 +28,15 @@ SCENARIO("prisv", "[prisv]"){
   s.push(1);
   Stack<int> s2;
   s2=s;
-  REQUIRE(s.count()==1);
-  REQUIRE(s.pop()==1);
+  REQUIRE(s.count() == s2.count());
+  REQUIRE(s.pop() == s2.pop());
 }
 
 SCENARIO("copy", "[copy]"){
   Stack<int> s;
   s.push(3);
   Stack<int> s2(s);
-  REQUIRE(s.count()==1);
-  REQUIRE(s.pop()==1);
+  REQUIRE(s2.count() == 3);
+  REQUIRE(s2.pop() == 3);
 }
 
