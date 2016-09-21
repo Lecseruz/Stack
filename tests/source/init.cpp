@@ -36,7 +36,7 @@ SCENARIO("copy", "[copy]"){
   Stack<int> s;
   s.push(3);
   Stack<int> s2(s);
-  REQUIRE(s2.count() == 3);
+  REQUIRE(s2.count() == 1);
   REQUIRE(s2.pop() == 3);
 }
 
