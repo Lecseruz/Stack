@@ -34,7 +34,7 @@ SCENARIO("prisv", "[prisv]"){
 
 SCENARIO("copy", "[copy]"){
   Stack<int> s;
-  s.push(1);
+  s.push(3);
   Stack<int> s2(s);
   REQUIRE(s.count()==1);
   REQUIRE(s.pop()==1);
