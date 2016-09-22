@@ -14,24 +14,26 @@ size_t max(size_t a, size_t b) {
 template<typename T>
 class Stack {
 public:
-    Stack();
+    Stack(); /* noexcept*/
 
-    ~Stack();
+    ~Stack(); /* noexcept */
 
-    Stack(const Stack &);
+    Stack(const Stack &); /* strong */
 
-    Stack& operator = (const Stack &);
+    Stack& operator = (const Stack &); /* strong */
 
-    size_t count() const;
+    size_t count() const; /* noexcept */
 
-    void push(T const &);
+    void push(T const &); /* strong */
 
-    T pop();
+    void pop();  /* strong */
+    
+    T top() const; /* noexcept */
 
-    bool is_empty() const;
+    bool is_empty() const; /* noexcept */
 
 private:
-    void grow();
+    void grow(); /* strong */
 
     T *array_;
     size_t array_size_;
@@ -77,11 +79,19 @@ void Stack<T>::grow() {
 }
 
 template<typename T>
-T Stack<T>::pop() {
+void Stack<T>::pop() {
     if (is_empty()) {
         throw std::logic_error("Stack is empty!");
     }
-    return array_[--count_];
+    array_[--count_];
+}
+
+template <typename T>
+T Stack<T>::top() const {
+    if (is_empty()) {
+        throw std::logic_error("Stack is empty!");
+    }
+    return array_[count_ - 1];
 }
 
 template<typename T>
@@ -90,7 +100,7 @@ bool Stack<T>::is_empty() const {
 }
 
 template <typename T>
-T* new_with_copy(const T *tmp, size_t count, size_t array_size) {
+T* new_with_copy(const T *tmp, size_t count, size_t array_size) {  /* strong */
     T *array_ = new T[array_size];
     copy(tmp, tmp + count, array_);
     return array_;
