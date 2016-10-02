@@ -35,7 +35,7 @@ public:
 
     void pop();  /* strong */
     
-    T top() const; /* noexcept */
+    T top() const; /* strong */
 
     bool is_empty() const; /* noexcept */
 
