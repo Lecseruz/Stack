@@ -37,7 +37,7 @@ public:
     
     T& top() const; /* strong */
 
-    bool is_empty() const; /* noexcept */
+    bool empty() const; /* noexcept */
 
 private:
     void grow(); /* strong */
