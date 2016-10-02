@@ -4,7 +4,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <string>
-
+#include <stdexcept>
 using namespace std;
 
 size_t max(size_t a, size_t b) {
