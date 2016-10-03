@@ -93,10 +93,10 @@ T Stack<T>::pop() {
 
 template <typename T>
 Stack<T>::Stack(const Stack &tmp)
-        :   count_(tmp.count_),
-            array_size_(tmp.array_size_)
 {
-    array_ = new_with_copy(tmp.array_, count_, array_size_);
+    array_ = new_with_copy(tmp.array_, tmp.count_, tmp.array_size_);
+    count_ = tmp.count_;
+    array_size_ = tmp.array_size_;
 }
 
 template <typename T>
