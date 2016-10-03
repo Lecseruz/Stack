@@ -40,6 +40,8 @@ public:
     void pop();  /* strong */
 
     T top();    /* strong */
+
+    bool empty() const; /* noexcept */
 private:
     void grow(); /* strong */
 
@@ -55,7 +57,7 @@ Stack<T>::Stack()
 
 template<typename T>
 Stack<T>::~Stack() {
-    if (count_ != 0) {
+    if (!empty()) {
         delete[] array_;
     }
 }
@@ -87,7 +89,7 @@ void Stack<T>::grow() {
 
 template<typename T>
 void Stack<T>::pop() {
-    if (count_ == 0) {
+    if (empty()) {
         throw std::logic_error("Stack is empty!");
     }
     --count_;
@@ -104,7 +106,7 @@ Stack<T>::Stack(const Stack &tmp)
 template <typename T>
 Stack<T>& Stack<T>::operator=(const Stack<T> &tmp) {
     if (this != &tmp) {
-        if (count_ != 0) {
+        if (!empty()) {
             delete[] array_;
         }
         array_ = new_with_copy(tmp.array_, tmp.count_, tmp.array_size_);
@@ -116,12 +118,16 @@ Stack<T>& Stack<T>::operator=(const Stack<T> &tmp) {
 
 template <typename T>
 T Stack<T>::top() {
-    if (count_ == 0) {
+    if (empty()) {
         throw std::logic_error("Stack is empty!");
     }
     return array_[count_ - 1];
 }
 
+template <typename T>
+bool Stack<T>::empty() const {
+    return count_ == 0;
+}
 
 
 #endif
