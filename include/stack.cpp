@@ -1,6 +1,7 @@
 #ifndef stack_cpp
 #define stack_cpp
-#pragma once#include <iostream>
+#pragma once
+#include <iostream>
 #include <cstdlib>
 #include <string>
 #include <stdexcept>
