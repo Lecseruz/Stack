@@ -121,7 +121,7 @@ void Stack<T>::grow() {
         delete[] Allocator<T>::ptr_;
     }
     Allocator<T>::ptr_ = new_array_;
-    size_ = new_array_size_;
+    Allocator<T>::size_ = new_array_size_;
 }
 
 template<typename T>
