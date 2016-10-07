@@ -155,11 +155,13 @@ Stack<T> &Stack<T>::operator=(const Stack<T> &tmp) {
 }
 
 template<typename T>
-T Stack<T>::top() {
+const T& Stack<T>::top() {
     if (empty()) {
         throw std::logic_error("Stack is empty!");
     }
-    return Allocator<T>::ptr_[Allocator<T>::count_ - 1];
+    else {
+       return Allocator<T>::ptr_[Allocator<T>::count_ - 1];
+    }
 }
 
 template<typename T>
