@@ -3,6 +3,8 @@
 #pragma once
 
 #include <iostream>
+#include <cstdlib>
+#include <string>
 #include <stdexcept>
 using namespace std;
 
@@ -14,7 +16,10 @@ template <typename T>
 T* new_with_copy(const T *tmp, size_t count, size_t array_size) {  /* strong */
     T *array_ = new T[array_size];
     try{ copy(tmp, tmp + count, array_); }
-    catch (...){ delete[] array_; throw; }
+    catch (...){
+        delete[] array_;
+        throw;
+    }
     return array_;
 }
 
@@ -33,8 +38,9 @@ public:
 
     void push(T const &); /* strong */
 
-    T pop();  /* strong */
+    void pop();  /* strong */
 
+    const T& top();    /* strong */
 private:
     void grow(); /* strong */
 
@@ -78,17 +84,14 @@ void Stack<T>::grow() {
     }
     array_ = new_array_;
     array_size_ = new_array_size_;
-    return;
 }
 
 template<typename T>
-T Stack<T>::pop() {
+void Stack<T>::pop() {
     if (count_ == 0) {
         throw std::logic_error("Stack is empty!");
-    }   else {
-        --count_;
-        return array_[count_];
     }
+    --count_;
 }
 
 template <typename T>
@@ -111,5 +114,14 @@ Stack<T>& Stack<T>::operator=(const Stack<T> &tmp) {
     }
     return *this;
 }
+
+template <typename T>
+const T& Stack<T>::top() {
+    if (count_ == 0) {
+        throw std::logic_error("Stack is empty!");
+    }
+    return array_[count_ - 1];
+}
+
 
 #endif
