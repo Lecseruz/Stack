@@ -1,6 +1,7 @@
 #ifndef stack_cpp
 #define stack_cpp
 #pragma once
+
 #include <iostream>
 #include <cstdlib>
 #include <string>
@@ -39,7 +40,7 @@ public:
 
     void pop();  /* strong */
 
-    T top();    /* strong */
+    const T& top();    /* strong */
 
     bool empty() const; /* noexcept */
 private:
