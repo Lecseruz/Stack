@@ -82,7 +82,7 @@ public:
 
     void pop();     /* strong */
 
-    T top();    /* strong */
+    const T& top();    /* strong */
 
 
 
@@ -128,8 +128,10 @@ template<typename T>
 void Stack<T>::pop() {
     if (empty()) {
         throw std::logic_error("Stack is empty!");
+    }   
+    else { 
+        Allocator<T>::count_--;    
     }
-    Allocator<T>::count_--;
 }
 
 template<typename T>
