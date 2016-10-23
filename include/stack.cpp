@@ -3,36 +3,20 @@
 #pragma once
 
 #include <iostream>
+#include <cstdlib>
+#include <string>
 #include <stdexcept>
-
 using namespace std;
 
 size_t max(size_t a, size_t b) {
     return a > b ? a : b;
 }
 
-template<typename T1, typename T2>
-void construct(T1 *ptr, T2 const &value) {
-    new(ptr) T1(value);
-}
-
-template<typename T>
-void destroy(T *ptr) noexcept {
-    ptr->~T();
-}
-
-template<typename FwdIter>
-void destroy(FwdIter first, FwdIter last) noexcept {
-    for (; first != last; ++first) {
-        destroy(&*first);
-    }
-}
-
-template<typename T>
-T *new_with_copy(const T *tmp, size_t count, size_t array_size) {  /* strong */
+template <typename T>
+T* new_with_copy(const T *tmp, size_t count, size_t array_size) {  /* strong */
     T *array_ = new T[array_size];
-    try { std::copy(tmp, tmp + count, array_); }
-    catch (...) {
+    try{ copy(tmp, tmp + count, array_); }
+    catch (...){
         delete[] array_;
         throw;
     }
@@ -40,150 +24,112 @@ T *new_with_copy(const T *tmp, size_t count, size_t array_size) {  /* strong */
 }
 
 template<typename T>
-class Allocator {
-protected:
-    Allocator(size_t size = 0);
+class Stack {
+public:
+    Stack(); /* noexcept*/
 
-    virtual ~Allocator();
+    ~Stack(); /* noexcept */
 
-    auto swap(Allocator &other) -> void;
+    Stack(const Stack &); /* strong */
 
-    Allocator(Allocator const &) = delete;
+    Stack& operator = (const Stack &); /* strong */
 
-    auto operator=(Allocator const &) -> Allocator & = delete;
+    size_t count() const; /* noexcept */
 
-    T *ptr_;
-    size_t size_;
+    void push(T const &); /* strong */
+
+    void pop();  /* strong */
+
+    const T& top();    /* strong */
+
+    bool empty() const; /* noexcept */
+private:
+    void grow(); /* strong */
+
+    T *array_;
+    size_t array_size_;
     size_t count_;
 };
 
 template<typename T>
-Allocator<T>::Allocator(size_t size)
-        :   ptr_(new T[size]),
-            size_(size),
-            count_(0)
-{}
-
-template<typename T>
-Allocator<T>::~Allocator() {
-//    if (count_ != 0) {
-//        delete[] ptr_;
-//    }
-    operator delete(ptr_);
-}
-
-template<typename T>
-auto Allocator<T>::swap(Allocator<T> &other) -> void {
-    std::swap(ptr_, other.ptr_);
-    std::swap(count_, other.count_);
-    std::swap(size_, other.size_);
-}
-
-
-template<typename T>
-class Stack : private Allocator<T> {
-public:
-    Stack(size_t size = 0);  /* noexcept*/
-
-    ~Stack();   /* noexcept */
-
-    Stack(const Stack &);   /* strong */
-
-    auto operator=(const Stack &) ->Stack &;    /* strong */
-
-    auto count() const -> size_t;   /* noexcept */
-
-    auto push(const T &value) -> void;  /* strong */
-
-    auto pop() -> void;     /* strong */
-
-    auto top() -> T;    /* strong */
-
-
-
-    auto empty() const -> bool; /* noexcept */
-private:
-    auto grow() -> void; /* strong */
-};
-
-template<typename T>
-Stack<T>::Stack(size_t size) {
-    this->ptr_ = new T[size];
-    this->count_ = 0;
-    this->size_ = size;
-}
-
-template<typename T>
-Stack<T>::Stack(const Stack &tmp) {
-    this->ptr_ = new_with_copy(tmp.ptr_, tmp.count_, tmp.size_);
-    this->count_ = tmp.count_;
-    this->size_ = tmp.size_;
-}
+Stack<T>::Stack()
+        : array_size_(0),
+          count_(0) { }
 
 template<typename T>
 Stack<T>::~Stack() {
+    if (!empty()) {
+        delete[] array_;
+    }
 }
 
 template<typename T>
-auto Stack<T>::count() const ->size_t {
-    return this->count_;
+size_t Stack<T>::count() const {
+    return count_;
 }
 
 template<typename T>
-auto Stack<T>::push(const T &value) -> void {
-    if (this->count_ == this->size_) {
+void Stack<T>::push(T const &element) {
+    if (array_size_ == count_) {
         grow();
     }
-
-    construct(this->ptr_ + this->count_, value);
-    ++this->count_;
+    array_[count_] = element;
+    count_++;
 }
 
-
 template<typename T>
-auto Stack<T>::grow() ->void {
-    size_t array_size = max(this->size_ * 2, 0);
-
-    Stack temp{array_size};
-    while (temp.count() < this->count_) {
-        temp.push(this->ptr_[temp.count()]);
+void Stack<T>::grow() {
+    size_t new_array_size_ = max(1, array_size_ * 2);
+    T *new_array_ = new_with_copy(array_, count_, new_array_size_);
+    if (count_ != 0) {
+        delete[] array_;
     }
-
-    this->swap(temp);
+    array_ = new_array_;
+    array_size_ = new_array_size_;
 }
 
 template<typename T>
-auto Stack<T>::pop() -> void {
+void Stack<T>::pop() {
     if (empty()) {
         throw std::logic_error("Stack is empty!");
+    } else {
+        --count_;
     }
-    this->count_--;
 }
 
-template<typename T>
-auto Stack<T>::operator=(const Stack<T> &tmp) ->Stack & {
+template <typename T>
+Stack<T>::Stack(const Stack &tmp)
+{
+    array_ = new_with_copy(tmp.array_, tmp.count_, tmp.array_size_);
+    count_ = tmp.count_;
+    array_size_ = tmp.array_size_;
+}
+
+template <typename T>
+Stack<T>& Stack<T>::operator=(const Stack<T> &tmp) {
     if (this != &tmp) {
         if (!empty()) {
-            delete[] this->ptr_;
+            delete[] array_;
         }
-        this->ptr_ = new_with_copy(tmp.ptr_, tmp.count_, tmp.size_);
-        this->count_ = tmp.count_;
-        this->size_ = tmp.size_;
+        array_ = new_with_copy(tmp.array_, tmp.count_, tmp.array_size_);
+        count_ = tmp.count_;
+        array_size_ = tmp.array_size_;
     }
     return *this;
 }
 
-template<typename T>
-auto Stack<T>::top() -> T {
+template <typename T>
+const T& Stack<T>::top() {
     if (empty()) {
         throw std::logic_error("Stack is empty!");
+    } else {
+        return array_[count_ - 1];
     }
-    return this->ptr_[this->count_ - 1];
 }
 
-template<typename T>
-auto Stack<T>::empty() const ->bool {
-    return this->count_ == 0;
+template <typename T>
+bool Stack<T>::empty() const {
+    return count_ == 0;
 }
 
 
