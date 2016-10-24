@@ -66,9 +66,6 @@ Allocator<T>::Allocator(size_t size)
 
 template<typename T>
 Allocator<T>::~Allocator() {
-//    if (count_ != 0) {
-//        delete[] ptr_;
-//    }
     operator delete(ptr_);
 }
 
