@@ -98,8 +98,12 @@ Stack<T>::Stack(size_t size)
 
 template<typename T>
 Stack<T>::Stack(const Stack &tmp)
+    :   Allocator<T>(tmp.size_)
 {
-    Stack<T>(tmp.size_).swap(*this);
+    for (int i = 0; i < this->size_; ++i) {
+        construct(this->ptr_ + i, tmp.ptr_[i]);
+    }
+    this->count_ = tmp.count_;
 }
 
 template<typename T>
@@ -135,12 +139,7 @@ auto Stack<T>::pop() -> void {
 template<typename T>
 auto Stack<T>::operator=(const Stack<T> &tmp) ->Stack & {
     if (this != &tmp) {
-        if (!empty()) {
-            delete[] this->ptr_;
-        }
-        for (size_t i = this->count_; i < tmp.count_; ++i) {
-            construct(this->ptr_ + i, tmp.ptr_[i]);
-        }
+        Stack(tmp).swap(*this);
     }
     return *this;
 }
@@ -167,6 +166,5 @@ template<typename T>
 auto Stack<T>::empty() const ->bool {
     return this->count_ == 0;
 }
-
 
 #endif
