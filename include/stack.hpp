@@ -97,7 +97,7 @@ public:
 
     auto pop() -> void;     /* strong */
 
-    auto top() -> T;    /* strong */
+    auto top() ->const T&;    /* strong */
 
 
 
