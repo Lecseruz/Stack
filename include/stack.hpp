@@ -1,6 +1,7 @@
 #ifndef stack_cpp
 #define stack_cpp
 #pragma once
+
 #include <iostream>
 #include <new>
 #include <stdexcept>
@@ -293,5 +294,4 @@ auto Stack<T>::throw_is_empty() const -> void {
         std::logic_error("stack is empty");
     }
 }
-
 #endif
