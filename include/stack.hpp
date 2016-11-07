@@ -214,8 +214,8 @@ class Stack{
 public:
     explicit
     Stack( size_t size = 0 );
-    Stack(Stack const &other ) = default;
-    auto operator =( Stack const &other )   /*strong*/ -> Stack & = default;
+    Stack(Stack const &other );
+    auto operator =( Stack const &other )   /*strong*/ -> Stack &;
 
     auto empty() const /*noexcept*/ -> bool;
     auto count() const /*noexcept*/ -> size_t;
@@ -234,6 +234,20 @@ template<typename T>
 Stack<T>::Stack(size_t size)
         : Allocator<T>(size) {
     ;
+}
+
+template<typename T>
+Stack<T>::Stack(const Stack &tmp)
+        : allocator_(tmp.allocator_) {
+    ;
+}
+
+template<typename T>
+auto Stack<T>::operator=(const Stack<T> &tmp) -> Stack & {
+    if (this != &tmp) {
+        Stack(tmp).allocator_.swap(allocator_);
+    }
+    return *this;
 }
 
 template<typename T>
