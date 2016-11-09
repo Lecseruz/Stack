@@ -132,7 +132,7 @@ Allocator<T>::Allocator(Allocator const &other)
 {
 	for (int i = 0; i < size_; ++i) {
 		if (map_->test(i)) {
-			destroy(ptr + i);
+			destroy(ptr_ + i);
 		}
 		construct(ptr_ + i, other.ptr_[i]);
 	}
