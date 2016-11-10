@@ -57,7 +57,7 @@ auto bitset::counter() -> size_t {
 }
 
 auto bitset::set(size_t index) -> void {
-	if (index <= size_){
+	if (index >= size_){
 		std::out_of_range("Error");
 	}
 	if (!test(index)){
