@@ -98,8 +98,8 @@ public:
 
     auto resize() /*strong*/ -> void;
 
-    auto construct(T *ptr, T const & value) /*strong*/ -> void;
-    auto destroy(T *ptr) /*noexcept*/ -> void;
+    auto construct(T * ptr, T const & value) /*strong*/ -> void;
+    auto destroy(T * ptr) /*noexcept*/ -> void;
 
     auto get() /*noexcept*/ -> T *;
     auto get() const /*noexcept*/ -> T const *;
@@ -184,7 +184,7 @@ auto Allocator<T>::resize() -> void {
 }
 
 template<typename T>
-auto Allocator<T>::get() -> T* {
+auto Allocator<T>::get() -> T * {
     return ptr_;
 }
 
@@ -234,7 +234,7 @@ public:
     auto top() const->T const &; /*strong*/
 private:
     Allocator<T> allocator_;
-    mutable std::mutex m;
+    mutable std::mutex mutex_;
     auto throw_is_empty() const -> void;
 };
 
@@ -251,7 +251,7 @@ auto Stack<T>::count() const -> size_t {
 
 template<typename T>
 auto Stack<T>::push(const T &value) -> void {
-    std::lock_guard<std::mutex> tmp(m);
+    std::lock_guard<std::mutex> tmp(mutex_);
     if (allocator_.full()) {
         allocator_.resize();
     }
@@ -260,7 +260,7 @@ auto Stack<T>::push(const T &value) -> void {
 
 template<typename T>
 auto Stack<T>::pop() -> void {
-    std::lock_guard<std::mutex> tmp(m);
+    std::lock_guard<std::mutex> tmp(mutex_);
     throw_is_empty();
     allocator_.destroy(allocator_.get() + (this->count() - 1));
 }
@@ -275,14 +275,14 @@ auto Stack<T>::operator=(const Stack<T> &tmp) -> Stack & {
 
 template<typename T>
 auto Stack<T>::top() const -> T const & {
-    std::lock_guard<std::mutex> tmp(m);
+    std::lock_guard<std::mutex> tmp(mutex_);
     throw_is_empty();
     return(*(allocator_.get() + this->count() - 1));
 }
 
 template<typename T>
 auto Stack<T>::top() -> T & {
-    std::lock_guard<std::mutex> tmp(m);
+    std::lock_guard<std::mutex> tmp(mutex_);
     throw_is_empty();
     return(*(allocator_.get() + this->count() - 1));
 }
@@ -298,6 +298,7 @@ auto Stack<T>::throw_is_empty() const -> void {
         std::logic_error("stack is empty");
     }
 }
+
 
 template <typename T>
 void push(Stack<T> &a, T b){
