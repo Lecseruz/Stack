@@ -222,7 +222,7 @@ class Stack{
 public:
     explicit
     Stack(size_t size = 0);
-    Stack(Stack const &other) = default;
+    Stack(Stack const &other);
     auto operator =(Stack const &other) /*strong*/ -> Stack &;
 
     auto empty() const /*noexcept*/ -> bool;
@@ -245,24 +245,10 @@ Stack<T>::Stack(size_t size)
 }
 
 template<typename T>
-auto Stack<T>::count() const -> size_t {
-    return allocator_.count();
-}
-
-template<typename T>
-auto Stack<T>::push(const T &value) -> void {
-    std::lock_guard<std::mutex> tmp(mutex_);
-    if (allocator_.full()) {
-        allocator_.resize();
-    }
-    allocator_.construct(allocator_.get() + allocator_.count(), value);
-}
-
-template<typename T>
-auto Stack<T>::pop() -> void {
-    std::lock_guard<std::mutex> tmp(mutex_);
-    throw_is_empty();
-    allocator_.destroy(allocator_.get() + (this->count() - 1));
+Stack<T>::Stack(Stack const &other)
+        :   allocator_(other.allocator_)
+{
+    ;
 }
 
 template<typename T>
@@ -272,6 +258,14 @@ auto Stack<T>::operator=(const Stack<T> &tmp) -> Stack & {
     }
     return *this;
 }
+
+template<typename T>
+auto Stack<T>::pop() -> void {
+    std::lock_guard<std::mutex> tmp(mutex_);
+    throw_is_empty();
+    allocator_.destroy(allocator_.get() + (this->count() - 1));
+}
+
 
 template<typename T>
 auto Stack<T>::top() const -> T const & {
@@ -288,6 +282,20 @@ auto Stack<T>::top() -> T & {
 }
 
 template<typename T>
+auto Stack<T>::count() const -> size_t {
+    return allocator_.count();
+}
+
+template<typename T>
+auto Stack<T>::push(const T &value) -> void {
+    std::lock_guard<std::mutex> tmp(mutex_);
+    if (allocator_.full()) {
+        allocator_.resize();
+    }
+    allocator_.construct(allocator_.get() + allocator_.count(), value);
+}
+
+template<typename T>
 auto Stack<T>::empty() const -> bool {
     return count() == 0;
 }
@@ -298,7 +306,6 @@ auto Stack<T>::throw_is_empty() const -> void {
         std::logic_error("stack is empty");
     }
 }
-
 
 template <typename T>
 void push(Stack<T> &a, T b){
