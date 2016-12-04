@@ -62,3 +62,12 @@ SCENARIO("empty3", "[empty3]"){
   
   REQUIRE(s1.empty()==false);
 }
+
+SCENARIO("thread", "[thread]"){
+    std::promise<int> p;
+    Stack<int> a;
+    std::future<int> ret = p.get_future();
+    std::thread(push<int>, std::ref(a), 1).detach();
+    std::thread(top<int>, std::ref(a), std::ref(p)).detach();
+    REQUIRE(1 == ret.get());
+}
