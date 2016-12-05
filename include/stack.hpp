@@ -253,7 +253,9 @@ Stack<T>::Stack(Stack const &other)
 
 template<typename T>
 auto Stack<T>::operator=(const Stack<T> &tmp) -> Stack & {
+    std::lock_guard<std::mutex> tmp(mutex_);
     if (this != &tmp) {
+        std::lock_guard<std::mutex> tmp(tmp.mutex_);
         Stack(tmp).allocator_.swap(allocator_);
     }
     return *this;
