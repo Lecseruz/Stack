@@ -1,6 +1,10 @@
-#include <stack.hpp>
-#include <catch.hpp>
 #include <iostream>
+#include <new>
+#include <stdexcept>
+#include <vector>
+#include <memory>
+#include <thread>
+#include <future>
 
 
 // SCENARIO("count", "[count]"){
